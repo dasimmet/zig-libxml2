@@ -2,7 +2,7 @@ const std = @import("std");
 const libxml2 = @import("libxml2.zig");
 const zlib = @import("test/zig-zlib/zlib.zig");
 
-pub fn build(b: *std.build.Builder) !void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -28,7 +28,7 @@ pub fn build(b: *std.build.Builder) !void {
     // z.link(xml2_with_libs.step, .{});
 
     const static_binding_test = b.addTest(.{
-        .root_source_file = .{ .path = "test/basic.zig" },
+        .root_source_file = b.path("test/basic.zig"),
         .optimize = optimize,
     });
     xml2.link(static_binding_test);

@@ -24,7 +24,7 @@ this into your repository.
 ```zig
 const libxml2 = @import("path/to/libxml2.zig");
 
-pub fn build(b: *std.build.Builder) !void {
+pub fn build(b: *std.Build) !void {
     // ...
 
     const lib = try libxml2.create(b, target, mode, .{

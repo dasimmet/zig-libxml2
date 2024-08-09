@@ -1,0 +1,16 @@
+.{
+    .name = "zig-libxml2",
+    .version = "0.0.0",
+    .dependencies = .{
+        .libxml2 = .{
+            .path = "libxml2",
+            // .url = "git+https://github.com/GNOME/libxml2.git#b45a0f0eca7d42b08fb757884a759e7654c90134",
+            // .hash = "1220e421395110f73e21eff4ce8af859c33bc277acfd1f7d4f9ccaca6cc936c94524",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "override",
+    },
+}
