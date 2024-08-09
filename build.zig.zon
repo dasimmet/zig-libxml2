@@ -11,6 +11,8 @@
     .paths = .{
         "build.zig",
         "build.zig.zon",
+        "libxml2.zig",
         "override",
+        "test",
     },
 }
