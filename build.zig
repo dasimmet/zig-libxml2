@@ -11,6 +11,7 @@ pub fn build(b: *std.Build) !void {
         .iconv = false,
         .lzma = false,
         .zlib = false,
+        .thread = b.option(bool, "thread", "with threads") orelse true,
     });
     b.installArtifact(xml2.step);
 
@@ -36,4 +37,12 @@ pub fn build(b: *std.Build) !void {
     const test_step = b.step("test", "Run tests");
     test_step.dependOn(&xml2_with_libs.step.step);
     // test_step.dependOn(&static_binding_test.step);
+}
+
+pub fn link(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype) void {
+    const this_dep = b.dependencyFromBuildZig(@This(), opt);
+    const src_dep = this_dep.builder.dependency("libxml2", .{});
+    compile.linkLibrary(this_dep.artifact("xml2"));
+    compile.addIncludePath(this_dep.path("override/include"));
+    compile.addIncludePath(src_dep.path("include"));
 }
