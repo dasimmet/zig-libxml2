@@ -182,6 +182,8 @@ pub fn create(
     if (target.result.os.tag == .windows) {
         ret.addIncludePath(b.path(win32_include_dir));
         ret.linkSystemLibrary("ws2_32");
+    } else if (target.result.os.tag == .wasi) {
+        ret.addIncludePath(b.path(wasi_include_dir));
     } else {
         ret.addIncludePath(b.path(posix_include_dir));
     }
@@ -197,6 +199,7 @@ pub fn create(
 /// Directories with our includes.
 const include_dir = "include";
 const override_include_dir = "override/include";
+const wasi_include_dir = "override/config/wasi";
 const posix_include_dir = "override/config/posix";
 const win32_include_dir = "override/config/win32";
 
