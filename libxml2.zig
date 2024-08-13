@@ -179,14 +179,16 @@ pub fn create(
 
     ret.addIncludePath(libxml2_dep.path(include_dir));
     ret.addIncludePath(b.path(override_include_dir));
+
     if (target.result.os.tag == .windows) {
         ret.addIncludePath(b.path(win32_include_dir));
         ret.linkSystemLibrary("ws2_32");
-    } else if (target.result.os.tag == .wasi) {
+    } else if (target.result.os.tag == .wasi or target.result.os.tag == .freestanding) {
         ret.addIncludePath(b.path(wasi_include_dir));
     } else {
         ret.addIncludePath(b.path(posix_include_dir));
     }
+
     ret.linkLibC();
 
     return Library{

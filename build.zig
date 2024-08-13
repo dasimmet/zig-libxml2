@@ -43,6 +43,9 @@ pub fn link(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype) void 
     const this_dep = b.dependencyFromBuildZig(@This(), opt);
     const src_dep = this_dep.builder.dependency("libxml2", .{});
     compile.linkLibrary(this_dep.artifact("xml2"));
+    if (compile.rootModuleTarget().os.tag == .windows) {
+        compile.linkSystemLibrary("bcrypt");
+    }
     compile.addIncludePath(this_dep.path("override/include"));
     compile.addIncludePath(src_dep.path("include"));
 }
