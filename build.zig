@@ -46,3 +46,20 @@ pub fn link(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype) void 
     compile.addIncludePath(this_dep.path("override/include"));
     compile.addIncludePath(src_dep.path("include"));
 }
+
+pub fn linkHeaderModule(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype, header: std.Build.LazyPath) void {
+    const this_dep = b.dependencyFromBuildZig(@This(), opt);
+    const src_dep = this_dep.builder.dependency("libxml2", .{});
+
+    const zig_libxml = b.addTranslateC(.{
+        .target = compile.root_module.resolved_target orelse b.host,
+        .optimize = compile.root_module.optimize orelse .Debug,
+        .root_source_file = header,
+    });
+    compile.step.dependOn(&zig_libxml.step);
+    zig_libxml.addIncludeDir(this_dep.path("override/include").getPath(this_dep.builder));
+    zig_libxml.addIncludeDir(src_dep.path("include").getPath(src_dep.builder));
+    compile.root_module.addImport("libxml2", zig_libxml.createModule());
+
+    link(b, compile, opt);
+}
