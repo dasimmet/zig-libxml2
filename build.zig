@@ -47,19 +47,29 @@ pub fn link(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype) void 
     compile.addIncludePath(src_dep.path("include"));
 }
 
-pub fn linkHeaderModule(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype, header: std.Build.LazyPath) void {
-    const this_dep = b.dependencyFromBuildZig(@This(), opt);
+
+pub const LinkHeaderModuleOptions = struct {
+    b: *std.Build,
+    compile: *std.Build.Step.Compile,
+    header: std.Build.LazyPath,
+    import_name: []const u8 = "libxml2",
+};
+
+// translates a c `header` to zig, adds it as an import to `compile`
+// and links the libxml2 c library
+pub fn linkHeaderModule(opt: LinkHeaderModuleOptions, dependency_options: anytype) void {
+    const this_dep = opt.b.dependencyFromBuildZig(@This(), dependency_options);
     const src_dep = this_dep.builder.dependency("libxml2", .{});
 
-    const zig_libxml = b.addTranslateC(.{
-        .target = compile.root_module.resolved_target orelse b.host,
-        .optimize = compile.root_module.optimize orelse .Debug,
-        .root_source_file = header,
+    const zig_libxml = opt.b.addTranslateC(.{
+        .target = opt.compile.root_module.resolved_target orelse opt.b.host,
+        .optimize = opt.compile.root_module.optimize orelse .Debug,
+        .root_source_file = opt.header,
     });
-    compile.step.dependOn(&zig_libxml.step);
+    opt.compile.step.dependOn(&zig_libxml.step);
     zig_libxml.addIncludeDir(this_dep.path("override/include").getPath(this_dep.builder));
     zig_libxml.addIncludeDir(src_dep.path("include").getPath(src_dep.builder));
-    compile.root_module.addImport("libxml2", zig_libxml.createModule());
+    opt.compile.root_module.addImport(opt.import_name, zig_libxml.createModule());
 
-    link(b, compile, opt);
+    link(opt.b, opt.compile, dependency_options);
 }
