@@ -79,4 +79,5 @@
 /* Define if va_list is an array type */
 #define VA_LIST_IS_ARRAY 1
 
-#define dup(x) x
+/* import dup since its not in wasi libc */
+extern int dup(int fd);
