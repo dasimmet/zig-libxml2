@@ -3,14 +3,9 @@
     .version = "0.0.0",
     .dependencies = .{
         .libxml2 = .{
-            // .path = "libxml2",
-            .url = "git+https://github.com/GNOME/libxml2.git#b45a0f0eca7d42b08fb757884a759e7654c90134",
-            .hash = "1220e421395110f73e21eff4ce8af859c33bc277acfd1f7d4f9ccaca6cc936c94524",
+            .url = "git+https://github.com/GNOME/libxml2.git?ref=v2.13.3#3b1742b8391e966be780bdc43fdf959f7b3a118c",
+            .hash = "1220293a4c6f5b55065efbf865cc1641e8cdb0a5f3d3f01fe02c0e373dbb7ff12d42",
         },
-        // .zlib = .{
-        //     .url = "git+https://github.com/mattnite/zig-zlib#04ddd81478f35e12717535b256c9d9d52f4b8089",
-        //     .hash = "122068368b9bfb0ce0546e93ec8608e230d729324692b8d401e4761b69168f3db3e8",
-        // },
     },
     .paths = .{
         "build.zig",
