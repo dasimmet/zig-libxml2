@@ -39,40 +39,20 @@ pub fn build(b: *std.Build) !void {
     // test_step.dependOn(&static_binding_test.step);
 }
 
-pub fn link(b: *std.Build, compile: *std.Build.Step.Compile, opt: anytype) void {
-    const this_dep = b.dependencyFromBuildZig(@This(), opt);
-    const src_dep = this_dep.builder.dependency("libxml2", .{});
-    compile.linkLibrary(this_dep.artifact("xml2"));
-    if (compile.rootModuleTarget().os.tag == .windows) {
-        compile.linkSystemLibrary("bcrypt");
-    }
-    compile.addIncludePath(this_dep.path("override/include"));
-    compile.addIncludePath(src_dep.path("include"));
-}
-
-
-pub const LinkHeaderModuleOptions = struct {
-    b: *std.Build,
-    compile: *std.Build.Step.Compile,
-    header: std.Build.LazyPath,
-    import_name: []const u8 = "libxml2",
-};
-
-// translates a c `header` to zig, adds it as an import to `compile`
-// and links the libxml2 c library
-pub fn linkHeaderModule(opt: LinkHeaderModuleOptions, dependency_options: anytype) void {
-    const this_dep = opt.b.dependencyFromBuildZig(@This(), dependency_options);
+pub fn moduleFromHeader(b: *std.Build, header: std.Build.LazyPath, dependency_options: anytype) *std.Build.Module {
+    const this_dep = b.dependencyFromBuildZig(@This(), dependency_options);
     const src_dep = this_dep.builder.dependency("libxml2", .{});
 
-    const zig_libxml = opt.b.addTranslateC(.{
-        .target = opt.compile.root_module.resolved_target orelse opt.b.host,
-        .optimize = opt.compile.root_module.optimize orelse .Debug,
-        .root_source_file = opt.header,
+    const zig_libxml = b.addTranslateC(.{
+        .target = dependency_options.target,
+        .optimize = dependency_options.optimize,
+        .root_source_file = header,
     });
-    opt.compile.step.dependOn(&zig_libxml.step);
     zig_libxml.addIncludeDir(this_dep.path("override/include").getPath(this_dep.builder));
     zig_libxml.addIncludeDir(src_dep.path("include").getPath(src_dep.builder));
-    opt.compile.root_module.addImport(opt.import_name, zig_libxml.createModule());
 
-    link(opt.b, opt.compile, dependency_options);
+    const lxml_mod = zig_libxml.createModule();
+    lxml_mod.linkLibrary(this_dep.artifact("xml2"));
+
+    return lxml_mod;
 }
