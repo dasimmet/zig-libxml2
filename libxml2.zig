@@ -79,6 +79,20 @@ pub const Options = struct {
     modules: bool = true,
     lzma: bool = true,
     zlib: bool = true,
+
+    pub fn fromBuildZigOptions(b: *std.Build) @This() {
+        const info = @typeInfo(@This());
+        var t: @This() = .{};
+        inline for (info.@"struct".fields) |f| {
+            const default_ptr: *const f.type = @ptrCast(f.default_value.?);
+            @field(t, f.name) = b.option(
+                f.type,
+                f.name,
+                "with " ++ f.name,
+            ) orelse default_ptr.*;
+        }
+        return t;
+    }
 };
 
 /// Create this library. This is the primary API users of build.zig should
