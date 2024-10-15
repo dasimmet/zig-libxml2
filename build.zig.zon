@@ -3,8 +3,8 @@
     .version = "0.0.0",
     .dependencies = .{
         .libxml2 = .{
-            .url = "git+https://github.com/GNOME/libxml2.git?ref=v2.13.3#3b1742b8391e966be780bdc43fdf959f7b3a118c",
-            .hash = "1220293a4c6f5b55065efbf865cc1641e8cdb0a5f3d3f01fe02c0e373dbb7ff12d42",
+            .url = "git+https://github.com/GNOME/libxml2.git?ref=v2.13.4#513949293d7ee2a11acc36bcdf5016a8fc5cc438",
+            .hash = "122058db8f693407f722eff8417c0421d6813835e87ed54ada683ce5b7a6055cbf6c",
         },
     },
     .paths = .{

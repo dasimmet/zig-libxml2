@@ -4,8 +4,8 @@ const std = @import("std");
 /// in the future we will parse this from configure.ac.
 pub const Version = struct {
     pub const major = "2";
-    pub const minor = "9";
-    pub const micro = "12";
+    pub const minor = "13";
+    pub const micro = "4";
 
     pub fn number() []const u8 {
         return comptime major ++ "0" ++ minor ++ "0" ++ micro;
