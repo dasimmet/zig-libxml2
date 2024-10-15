@@ -39,7 +39,7 @@ pub fn build(b: *std.Build) !void {
     // test_step.dependOn(&static_binding_test.step);
 }
 
-pub fn moduleFromHeader(b: *std.Build, header: std.Build.LazyPath, dependency_options: anytype) *std.Build.Module {
+pub fn moduleFromCHeader(b: *std.Build, header: std.Build.LazyPath, dependency_options: anytype) *std.Build.Module {
     const this_dep = b.dependencyFromBuildZig(@This(), dependency_options);
     const src_dep = this_dep.builder.dependency("libxml2", .{});
 
@@ -48,8 +48,8 @@ pub fn moduleFromHeader(b: *std.Build, header: std.Build.LazyPath, dependency_op
         .optimize = dependency_options.optimize,
         .root_source_file = header,
     });
-    zig_libxml.addIncludeDir(this_dep.path("override/include").getPath(this_dep.builder));
-    zig_libxml.addIncludeDir(src_dep.path("include").getPath(src_dep.builder));
+    zig_libxml.addIncludePath(this_dep.path("override/include"));
+    zig_libxml.addIncludePath(src_dep.path("include"));
 
     const lxml_mod = zig_libxml.createModule();
     lxml_mod.linkLibrary(this_dep.artifact("xml2"));
