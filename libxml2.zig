@@ -104,6 +104,15 @@ pub fn create(
     optimize: std.builtin.OptimizeMode,
     opts: Options,
 ) !Library {
+    const libxml2_dep = b.dependency("libxml2", .{});
+    const include_dir = libxml2_dep.path("include");
+    const override_include_dir = b.path("override/include");
+    const wasi_include_dir = b.path("override/config/wasi");
+    const posix_include_dir = b.path("override/config/posix");
+    const win32_include_dir = b.path("override/config/win32");
+    b.addNamedLazyPath("include", include_dir);
+    b.addNamedLazyPath("override_include", override_include_dir);
+
     const ret = b.addStaticLibrary(.{
         .name = "xml2",
         .target = target,
@@ -182,7 +191,6 @@ pub fn create(
             try flags.append(define);
         }
     }
-    const libxml2_dep = b.dependency("libxml2", .{});
 
     // C files
     ret.addCSourceFiles(.{
@@ -191,33 +199,26 @@ pub fn create(
         .root = libxml2_dep.path(""),
     });
 
-    ret.addIncludePath(libxml2_dep.path(include_dir));
-    ret.addIncludePath(b.path(override_include_dir));
+    ret.addIncludePath(include_dir);
+    ret.addIncludePath(override_include_dir);
 
     if (target.result.os.tag == .windows) {
-        ret.addIncludePath(b.path(win32_include_dir));
+        ret.addIncludePath(win32_include_dir);
         ret.linkSystemLibrary("ws2_32");
     } else if (target.result.os.tag == .wasi or target.result.os.tag == .freestanding) {
-        ret.addIncludePath(b.path(wasi_include_dir));
+        ret.addIncludePath(wasi_include_dir);
     } else {
-        ret.addIncludePath(b.path(posix_include_dir));
+        ret.addIncludePath(posix_include_dir);
     }
 
     ret.linkLibC();
 
     return Library{
         .step = ret,
-        .include_dir = libxml2_dep.path(include_dir),
-        .override_include_dir = libxml2_dep.path(include_dir),
+        .include_dir = include_dir,
+        .override_include_dir = include_dir,
     };
 }
-
-/// Directories with our includes.
-const include_dir = "include";
-const override_include_dir = "override/include";
-const wasi_include_dir = "override/config/wasi";
-const posix_include_dir = "override/config/posix";
-const win32_include_dir = "override/config/win32";
 
 const srcs = &.{
     "buf.c",
